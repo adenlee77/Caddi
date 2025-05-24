@@ -60,7 +60,7 @@ with mp_pose.Pose() as pose:
                 cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (250, 60, 5), 2)
 
         except:
-            print("Fail")
+            print("Failed")
             pass
 
         # Draw detections
