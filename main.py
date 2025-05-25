@@ -10,8 +10,10 @@ from pose_utils import (
     get_right_knee_angle,
     get_spine_angle
 )
+from swing_stage import SwingPhaseDetector
 
 cap = cv2.VideoCapture(1)
+swing_detector = SwingPhaseDetector()
 
 # Set up mediapipe instance
 with mp_pose.Pose() as pose:
@@ -58,6 +60,10 @@ with mp_pose.Pose() as pose:
             cv2.putText(image, f"{int(spine_angle)}",
                 tuple(np.multiply(shoulder_center, [frame_width, frame_height]).astype(int)),
                 cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (250, 60, 5), 2)
+            
+            swing_state = swing_detector.update(landmarks)
+            cv2.putText(image, swing_state, (30, 50),
+                        cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.5, (0, 0, 255), 2)
 
         except:
             print("Failed")
