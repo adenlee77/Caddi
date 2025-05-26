@@ -10,7 +10,8 @@ class SwingPhaseDetector:
                  stability_std_threshold=0.003,
                  wrist_movement_threshold=0.02,
                  shoulder_z_threshold=0.1,
-                 downswing_wrist_threshold=0.01):
+                 downswing_wrist_threshold=0.01,
+                 original_spot_threshold=0.1):
         self.l_wrist_y_history = deque(maxlen=history_length)
         self.r_wrist_y_history = deque(maxlen=history_length)
 
@@ -30,6 +31,7 @@ class SwingPhaseDetector:
         self.wrist_movement_threshold = wrist_movement_threshold
         self.shoulder_z_threshold = shoulder_z_threshold
         self.downswing_wrist_threshold = downswing_wrist_threshold
+        self.original_spot_threshold = original_spot_threshold
 
     def update(self, landmarks):
 
@@ -96,6 +98,13 @@ class SwingPhaseDetector:
 
             if left_dropping and right_dropping and shoulder_reversing:
                 self.mode = "downswing_started"
+        
+        elif self.mode == "downswing_started":
+            left_back = abs(l_wrist_y - self.setup_baseline_left_y) < self.original_spot_threshold
+            right_back = abs(r_wrist_y - self.setup_baseline_right_y) < self.original_spot_threshold
+
+            if left_back and right_back:
+                self.mode = "followthrough_started"
 
         self.prev_left_y = l_wrist_y
         self.prev_right_y = r_wrist_y
