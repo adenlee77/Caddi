@@ -23,6 +23,8 @@ class SwingPhaseDetector:
         self.back_peak_right_y = None
         self.prev_left_y = None
         self.prev_right_y = None
+        self.peak_left_y = float('-inf')
+        self.peak_right_y = float('-inf')
 
         self.mode = "waiting"
         self.mp_pose = mp.solutions.pose
@@ -79,24 +81,26 @@ class SwingPhaseDetector:
         # Change from backswing to downswing
         elif self.mode == "backswing_started":
 
-            # Check if left wrist is going down
-            left_dropping = (
-                self.prev_left_y is not None and
-                l_wrist_y > self.prev_left_y and
-                l_wrist_y > self.back_peak_left_y + self.downswing_wrist_threshold
-            )
+            # Check peak y-value of backswing
+            self.peak_left_y = min(self.peak_left_y, l_wrist_y)
+            self.peak_right_y = min(self.peak_right_y, r_wrist_y)
 
-            # Check if right wrist is going down
-            right_dropping = (
-                self.prev_right_y is not None and
-                r_wrist_y > self.prev_right_y and
-                r_wrist_y > self.back_peak_right_y + self.downswing_wrist_threshold
-            )
+            # Calculate average slope of wrist movement
+            left_slope = np.mean(np.diff(list(self.l_wrist_y_history)))
+            right_slope = np.mean(np.diff(list(self.r_wrist_y_history)))
 
-            # Check if shoulder is turning
-            shoulder_reversing = shoulder_z_diff < self.shoulder_z_baseline + (self.shoulder_z_threshold / 2)
+            # Is wrist falling (positive slope)?
+            left_dropping = left_slope > 0.002
+            right_dropping = right_slope > 0.002
 
-            if left_dropping and right_dropping and shoulder_reversing:
+            # Has wrist dropped significantly from its peak?
+            left_drop_passed = l_wrist_y > self.peak_left_y + self.downswing_wrist_threshold
+            right_drop_passed = r_wrist_y > self.peak_right_y + self.downswing_wrist_threshold
+
+            # Is shoulder rotating back?
+            shoulder_reversing = abs(l_shoulder_z - r_shoulder_z) < self.shoulder_z_baseline + self.shoulder_z_threshold
+
+            if left_dropping and right_dropping and left_drop_passed and right_drop_passed and shoulder_reversing:
                 self.mode = "downswing_started"
         
         # Change from downswing to followthrough
