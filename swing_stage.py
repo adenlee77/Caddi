@@ -124,7 +124,7 @@ class SwingPhaseDetector:
                 r_wrist_y < self.back_peak_right_y + self.downswing_wrist_threshold
             )
 
-            if (left_back and right_back) or (left_dropping and right_dropping):
+            if (left_back and right_back) or (left_rising and right_rising):
                 self.mode = "followthrough_started"
         
         # Change from followthrough to end of swing

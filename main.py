@@ -64,9 +64,13 @@ with mp_pose.Pose() as pose:
             swing_state = swing_detector.update(landmarks)
             cv2.putText(image, swing_state, (30, 50),
                         cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.5, (0, 0, 255), 2)
+            
+            print(swing_state)
 
-        except:
-            print("Failed")
+        except Exception as e:
+            print(f"Failed due to error: {e}")
+            import traceback
+            traceback.print_exc()
             pass
 
         # Draw detections
