@@ -99,12 +99,22 @@ class SwingPhaseDetector:
             if left_dropping and right_dropping and shoulder_reversing:
                 self.mode = "downswing_started"
         
+        # Change from downswing to followthrough
         elif self.mode == "downswing_started":
+
+            # See if wrists go back to original setup position
             left_back = abs(l_wrist_y - self.setup_baseline_left_y) < self.original_spot_threshold
             right_back = abs(r_wrist_y - self.setup_baseline_right_y) < self.original_spot_threshold
 
             if left_back and right_back:
                 self.mode = "followthrough_started"
+        
+        # Change from followthrough to end of swing
+        elif self.mode == "followthrough_started":
+
+            # Check for wrists staying still
+            if l_std < self.stability_std_threshold and r_std < self.stability_std_threshold:
+                self.mode = "End"
 
         self.prev_left_y = l_wrist_y
         self.prev_right_y = r_wrist_y
