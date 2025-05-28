@@ -79,14 +79,14 @@ class SwingPhaseDetector:
         # Change from backswing to downswing
         elif self.mode == "backswing_started":
 
-            # Check if left shoulder is going down
+            # Check if left wrist is going down
             left_dropping = (
                 self.prev_left_y is not None and
                 l_wrist_y > self.prev_left_y and
                 l_wrist_y > self.back_peak_left_y + self.downswing_wrist_threshold
             )
 
-            # Check if right shoulder is going down
+            # Check if right wrist is going down
             right_dropping = (
                 self.prev_right_y is not None and
                 r_wrist_y > self.prev_right_y and
@@ -106,14 +106,42 @@ class SwingPhaseDetector:
             left_back = abs(l_wrist_y - self.setup_baseline_left_y) < self.original_spot_threshold
             right_back = abs(r_wrist_y - self.setup_baseline_right_y) < self.original_spot_threshold
 
-            if left_back and right_back:
+            # Check if left wrist is going up
+            left_rising = (
+                self.prev_left_y is not None and
+                l_wrist_y < self.prev_left_y and
+                l_wrist_y < self.back_peak_left_y + self.downswing_wrist_threshold
+            )
+
+            # Check if right wrist is going up
+            right_rising = (
+                self.prev_right_y is not None and
+                r_wrist_y < self.prev_right_y and
+                r_wrist_y < self.back_peak_right_y + self.downswing_wrist_threshold
+            )
+
+            if (left_back and right_back) or (left_dropping and right_dropping):
                 self.mode = "followthrough_started"
         
         # Change from followthrough to end of swing
         elif self.mode == "followthrough_started":
+            
+            # Check if left wrist is going down
+            left_dropping = (
+                self.prev_left_y is not None and
+                l_wrist_y > self.prev_left_y and
+                l_wrist_y > self.back_peak_left_y + self.downswing_wrist_threshold
+            )
+
+            # Check if right wrist is going down
+            right_dropping = (
+                self.prev_right_y is not None and
+                r_wrist_y > self.prev_right_y and
+                r_wrist_y > self.back_peak_right_y + self.downswing_wrist_threshold
+            )
 
             # Check for wrists staying still
-            if l_std < self.stability_std_threshold and r_std < self.stability_std_threshold:
+            if (l_std < self.stability_std_threshold and r_std < self.stability_std_threshold) or (left_dropping and right_dropping):
                 self.mode = "End"
 
         self.prev_left_y = l_wrist_y
