@@ -6,11 +6,11 @@ POSE = mp.solutions.pose
 
 class SwingPhaseDetector:
     def __init__(self,
-                 history_length=10,
+                 history_length=5,
                  stability_std_threshold=0.003,
                  wrist_movement_threshold=0.02,
-                 shoulder_z_threshold=0.1,
-                 downswing_wrist_threshold=0.01,
+                 shoulder_z_threshold=0.05,
+                 downswing_wrist_threshold=0.005,
                  original_spot_threshold=0.1):
         self.l_wrist_y_history = deque(maxlen=history_length)
         self.r_wrist_y_history = deque(maxlen=history_length)
