@@ -11,9 +11,11 @@ from pose_utils import (
     get_spine_angle
 )
 from swing_stage import SwingPhaseDetector
+from feedback import swing_feedback
 
 cap = cv2.VideoCapture(1)
 swing_detector = SwingPhaseDetector()
+feedback = swing_feedback()
 
 # Set up mediapipe instance
 with mp_pose.Pose() as pose:
@@ -66,6 +68,27 @@ with mp_pose.Pose() as pose:
                         cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.5, (0, 0, 255), 2)
             
             print(swing_state)
+
+            keypoints = {
+                "left_knee": tuple(np.multiply(left_knee_point, [frame_width, frame_height]).astype(int)),
+                "right_knee": tuple(np.multiply(right_knee_point, [frame_width, frame_height]).astype(int)),
+                "left_elbow": tuple(np.multiply(left_elbow_point, [frame_width, frame_height]).astype(int)),
+                "right_elbow": tuple(np.multiply(right_elbow_point, [frame_width, frame_height]).astype(int)),
+                "shoulder_center": tuple(np.multiply(shoulder_center, [frame_width, frame_height]).astype(int)),
+            }
+
+            keyangles = {
+                "left_knee_angle": int(left_knee_angle),
+                "right_knee_angle": int(right_knee_angle),
+                "left_elbow_angle": int(left_elbow_angle),
+                "right_elbow_angle": int(right_elbow_angle),
+                "spine_angle": int(spine_angle),
+            }
+
+            swing_feedback.add(swing_state, keypoints, keyangles)
+
+            if swing_state == 'End':
+                break
 
         except Exception as e:
             print(f"Failed due to error: {e}")

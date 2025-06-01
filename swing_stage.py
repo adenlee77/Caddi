@@ -63,10 +63,10 @@ class SwingPhaseDetector:
                 self.setup_baseline_left_y = np.mean(self.l_wrist_y_history)
                 self.setup_baseline_right_y = np.mean(self.r_wrist_y_history)
                 self.shoulder_z_baseline = abs(l_shoulder_z - r_shoulder_z)
-                self.mode = "setup_detected"
+                self.mode = "setup"
 
         # Change from setup to backswing
-        elif self.mode == "setup_detected":
+        elif self.mode == "setup":
 
             # Check if wrists move from rest position and shoulders rotate
             left_wrist_moved = abs(self.setup_baseline_left_y - l_wrist_y) > self.wrist_movement_threshold
@@ -76,10 +76,10 @@ class SwingPhaseDetector:
             if left_wrist_moved and right_wrist_moved and shoulder_rotated:
                 self.back_peak_left_y = l_wrist_y
                 self.back_peak_right_y = r_wrist_y
-                self.mode = "backswing_started"
+                self.mode = "backswing"
 
         # Change from backswing to downswing
-        elif self.mode == "backswing_started":
+        elif self.mode == "backswing":
 
             # Check peak y-value of backswing
             self.peak_left_y = min(self.peak_left_y, l_wrist_y)
@@ -101,10 +101,10 @@ class SwingPhaseDetector:
             shoulder_reversing = abs(l_shoulder_z - r_shoulder_z) < self.shoulder_z_baseline + self.shoulder_z_threshold
 
             if left_dropping and right_dropping and left_drop_passed and right_drop_passed and shoulder_reversing:
-                self.mode = "downswing_started"
+                self.mode = "downswing"
         
         # Change from downswing to followthrough
-        elif self.mode == "downswing_started":
+        elif self.mode == "downswing":
 
             # See if wrists go back to original setup position
             left_back = abs(l_wrist_y - self.setup_baseline_left_y) < self.original_spot_threshold
@@ -125,10 +125,10 @@ class SwingPhaseDetector:
             )
 
             if (left_back and right_back) or (left_rising and right_rising):
-                self.mode = "followthrough_started"
+                self.mode = "followthrough"
         
         # Change from followthrough to end of swing
-        elif self.mode == "followthrough_started":
+        elif self.mode == "followthrough":
             
             # Check if left wrist is going down
             left_dropping = (
