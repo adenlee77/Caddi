@@ -15,7 +15,6 @@ from feedback import swing_feedback
 
 cap = cv2.VideoCapture(1)
 swing_detector = SwingPhaseDetector()
-feedback = swing_feedback()
 
 # Set up mediapipe instance
 with mp_pose.Pose() as pose:
@@ -85,10 +84,28 @@ with mp_pose.Pose() as pose:
                 "spine_angle": int(spine_angle),
             }
 
-            swing_feedback.add(swing_state, keypoints, keyangles)
-
             if swing_state == 'End':
-                break
+                swing_data = {
+                    "angles": keyangles,
+                    "positions": keypoints,
+                    "view": "front-facing"
+                }
+
+                prompt = f"""
+                You are a golf coach. Here's a player's front-facing biomechanical data during their swing:
+                {swing_data}
+
+                Give specific, constructive feedback on their swing technique.
+                Identify what to improve and suggest 1 or 2 drills to help fix it.
+                """
+
+                feedback_text = swing_feedback(prompt)
+                print("\nGemini Coach:", feedback_text)
+
+                lines = feedback_text.split('\n')[:2]
+                for i, line in enumerate(lines):
+                    cv2.putText(image, line, (20, frame_height - 60 + (i * 20)),
+                                cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.6, (255, 255, 255), 1)
 
         except Exception as e:
             print(f"Failed due to error: {e}")
