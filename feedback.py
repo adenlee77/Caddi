@@ -1,17 +1,16 @@
 import os
 from dotenv import load_dotenv
-import google.generativeai as genai
+from google import genai
 
-load_dotenv("API_KEY")
-api_key = os.getenv("GEMINI_API_KEY")
+load_dotenv()
 
-genai.configure(api_key=api_key)
+api_key = os.getenv("GOOGLE_API_KEY")
 
-model = genai.GenerativeModel("gemini-pro")
+client = genai.Client(api_key=api_key)
 
 def swing_feedback(prompt):
     try:
-        response = model.generate_content(prompt)
+        response = client.model.generate_content(prompt)
         return response.text.strip()
     except Exception as e:
         print("Gemini API error:", e)

@@ -85,6 +85,10 @@ with mp_pose.Pose() as pose:
             }
 
             if swing_state == 'End':
+
+                cap.release()
+                cv2.destroyAllWindows()
+
                 swing_data = {
                     "angles": keyangles,
                     "positions": keypoints,
@@ -100,12 +104,9 @@ with mp_pose.Pose() as pose:
                 """
 
                 feedback_text = swing_feedback(prompt)
-                print("\nGemini Coach:", feedback_text)
+                print("\nAI Coach:", feedback_text)
 
-                lines = feedback_text.split('\n')[:2]
-                for i, line in enumerate(lines):
-                    cv2.putText(image, line, (20, frame_height - 60 + (i * 20)),
-                                cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.6, (255, 255, 255), 1)
+                break
 
         except Exception as e:
             print(f"Failed due to error: {e}")
@@ -122,5 +123,5 @@ with mp_pose.Pose() as pose:
             break
 
     cap.release()
-    cv2.destroyAllWindows
+    cv2.destroyAllWindows()
 
