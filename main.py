@@ -16,6 +16,8 @@ from feedback import swing_feedback
 cap = cv2.VideoCapture(1)
 swing_detector = SwingPhaseDetector()
 
+club = input("Which club you will be using\n")
+
 # Set up mediapipe instance
 with mp_pose.Pose() as pose:
     while cap.isOpened():
@@ -96,7 +98,7 @@ with mp_pose.Pose() as pose:
                 }
 
                 prompt = f"""
-                You are a golf coach. Here's a player's front-facing biomechanical data during their swing:
+                You are a golf coach. Here's a player's front-facing biomechanical data during their swing using a {club}:
                 {swing_data}
 
                 Give specific, constructive feedback on their swing technique.
