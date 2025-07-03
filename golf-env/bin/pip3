@@ -1,5 +1,5 @@
 #!/bin/sh
-'''exec' "/Users/aden/Downloads/Personal Projects/Computer Vision/Golf/golf-en/bin/python3" "$0" "$@"
+'''exec' "/Users/aden/Downloads/Personal Projects/Computer Vision/Golf/golf-env/bin/python3.10" "$0" "$@"
 ' '''
 # -*- coding: utf-8 -*-
 import re
