@@ -106,11 +106,16 @@ with mp_pose.Pose() as pose:
                 }
 
                 prompt = f"""
-                You are a golf coach. Here's a player's full front-facing swing data captured frame-by-frame using a {club}:
+                You are a golf coach. Here's a player's front-facing swing data captured frame-by-frame using a {club}:
                 {swing_data}
 
-                Give specific, constructive feedback on their swing technique across the swing.
-                Identify what to improve and suggest 1 or 2 drills to help fix it.
+                Please analyze the swing and respond breifly in **JSON format** with the following fields:
+                - "backswing_feedback": feedback about the backswing
+                - "downswing_feedback": feedback about the downswing and follow-through
+                - "swing_grade": a grade from 0-100
+                - "drills": a list of 1 or 2 drills that would help fix major issues
+
+                Respond with only the JSON, no explanation or extra commentary.
                 """
 
                 feedback_text = swing_feedback(prompt)
