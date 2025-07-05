@@ -70,3 +70,6 @@ def get_spine_angle(landmarks):
     angle = abs(np.degrees(np.arctan2(dy, dx)))
     return angle, [(l_shoulder[0] + r_shoulder[0]) / 2,
                    (l_shoulder[1] + r_shoulder[1]) / 2]
+
+def get_ball_pos(frame):
+    pass

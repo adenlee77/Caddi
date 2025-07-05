@@ -8,7 +8,8 @@ from pose_utils import (
     get_right_elbow_angle,
     get_left_elbow_angle,
     get_right_knee_angle,
-    get_spine_angle
+    get_spine_angle,
+    get_ball_pos
 )
 from swing_stage import SwingPhaseDetector
 from feedback import swing_feedback
@@ -34,6 +35,7 @@ with mp_pose.Pose() as pose:
         try:
             landmarks = results.pose_landmarks.landmark
 
+            ball_pos = get_ball_pos(frame)
             left_knee_angle, left_knee_point = get_left_knee_angle(landmarks)
             left_elbow_angle, left_elbow_point = get_left_elbow_angle(landmarks)
             right_knee_angle, right_knee_point = get_right_knee_angle(landmarks)
@@ -94,6 +96,7 @@ with mp_pose.Pose() as pose:
                 swing_data = {
                     "angles": keyangles,
                     "positions": keypoints,
+                    "ball position": ball_pos,
                     "view": "front-facing"
                 }
 
