@@ -14,7 +14,7 @@ from pose_utils import (
 from swing_stage import SwingPhaseDetector
 from feedback import swing_feedback
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 swing_detector = SwingPhaseDetector()
 
 club = input("Which club you will be using\n")
@@ -70,9 +70,8 @@ with mp_pose.Pose() as pose:
             swing_state = swing_detector.update(landmarks)
             cv2.putText(image, swing_state, (30, 50),
                         cv2.FONT_HERSHEY_COMPLEX_SMALL, 1.5, (0, 0, 255), 2)
-            
-            print(swing_state)
 
+            # Cache all data from every frame for feedback
             if swing_state != 'waiting':
                 swing_sequence.append({
                     "angles": {
@@ -110,16 +109,24 @@ with mp_pose.Pose() as pose:
                 {swing_data}
 
                 Please analyze the swing and respond breifly in **JSON format** with the following fields:
+                - "setup_feedback": feedback about the body position during setup
                 - "backswing_feedback": feedback about the backswing
-                - "downswing_feedback": feedback about the downswing and follow-through
+                - "downswing_feedback": feedback about the downswing
+                - "followthrough_feedback": feedback about the followthrough
                 - "swing_grade": a grade from 0-100
                 - "drills": a list of 1 or 2 drills that would help fix major issues
 
-                Respond with only the JSON, no explanation or extra commentary.
+                Respond with only a valid JSON object. Do not wrap it in code block formatting, no explanation or extra commentary.
                 """
 
                 feedback_text = swing_feedback(prompt)
                 print("\nAI Coach:", feedback_text)
+                print("Setup:", feedback_text["setup_feedback"])
+                print("Backswing:", feedback_text["backswing_feedback"])
+                print("Downswing:", feedback_text["downswing_feedback"])
+                print("follow-through:", feedback_text["followthrough_feedback"])
+                print("Grade:", feedback_text["swing_grade"])
+                print("Drills:", ", ".join(feedback_text["drills"]))
 
                 break
 
