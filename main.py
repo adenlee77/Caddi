@@ -18,6 +18,7 @@ cap = cv2.VideoCapture(1)
 swing_detector = SwingPhaseDetector()
 
 club = input("Which club you will be using\n")
+swing_sequence = []
 
 # Set up mediapipe instance
 with mp_pose.Pose() as pose:
@@ -72,21 +73,26 @@ with mp_pose.Pose() as pose:
             
             print(swing_state)
 
-            keypoints = {
-                "left_knee": tuple(np.multiply(left_knee_point, [frame_width, frame_height]).astype(int)),
-                "right_knee": tuple(np.multiply(right_knee_point, [frame_width, frame_height]).astype(int)),
-                "left_elbow": tuple(np.multiply(left_elbow_point, [frame_width, frame_height]).astype(int)),
-                "right_elbow": tuple(np.multiply(right_elbow_point, [frame_width, frame_height]).astype(int)),
-                "shoulder_center": tuple(np.multiply(shoulder_center, [frame_width, frame_height]).astype(int)),
-            }
-
-            keyangles = {
-                "left_knee_angle": int(left_knee_angle),
-                "right_knee_angle": int(right_knee_angle),
-                "left_elbow_angle": int(left_elbow_angle),
-                "right_elbow_angle": int(right_elbow_angle),
-                "spine_angle": int(spine_angle),
-            }
+            if swing_state != 'waiting':
+                swing_sequence.append({
+                    "angles": {
+                        "left_knee_angle": int(left_knee_angle),
+                        "right_knee_angle": int(right_knee_angle),
+                        "left_elbow_angle": int(left_elbow_angle),
+                        "right_elbow_angle": int(right_elbow_angle),
+                        "spine_angle": int(spine_angle),
+                    },
+                    "positions": {
+                        "left_knee": tuple(np.multiply(left_knee_point, [frame_width, frame_height]).astype(int)),
+                        "right_knee": tuple(np.multiply(right_knee_point, [frame_width, frame_height]).astype(int)),
+                        "left_elbow": tuple(np.multiply(left_elbow_point, [frame_width, frame_height]).astype(int)),
+                        "right_elbow": tuple(np.multiply(right_elbow_point, [frame_width, frame_height]).astype(int)),
+                        "shoulder_center": tuple(np.multiply(shoulder_center, [frame_width, frame_height]).astype(int)),
+                    },
+                    "ball_position": ball_pos,
+                    "frame_index": len(swing_sequence),
+                    "phase": swing_state
+                })
 
             if swing_state == 'End':
 
@@ -94,17 +100,16 @@ with mp_pose.Pose() as pose:
                 cv2.destroyAllWindows()
 
                 swing_data = {
-                    "angles": keyangles,
-                    "positions": keypoints,
-                    "ball position": ball_pos,
-                    "view": "front-facing"
+                    "club": club,
+                    "view": "front-facing",
+                    "swing_sequence": swing_sequence
                 }
 
                 prompt = f"""
-                You are a golf coach. Here's a player's front-facing biomechanical data during their swing using a {club}:
+                You are a golf coach. Here's a player's full front-facing swing data captured frame-by-frame using a {club}:
                 {swing_data}
 
-                Give specific, constructive feedback on their swing technique.
+                Give specific, constructive feedback on their swing technique across the swing.
                 Identify what to improve and suggest 1 or 2 drills to help fix it.
                 """
 
