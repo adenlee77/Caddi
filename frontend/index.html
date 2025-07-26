@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Caddi</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin-top: 30px; }
+    video { border: 2px solid #444; width: 640px; height: 480px; margin-bottom: 15px; }
+    button { padding: 10px 20px; margin: 10px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>Golf Swing Video Recorder</h1>
+  <video id="preview" autoplay muted playsinline></video><br>
+  <button onclick="startRecording()">Start Recording</button>
+  <button onclick="stopRecording()">Stop & Upload</button>
+  <p id="status"></p>
+
+  <script>
+    let mediaRecorder;
+    let recordedChunks = [];
+
+    async function startRecording() {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      document.getElementById('preview').srcObject = stream;
+
+      recordedChunks = [];
+      mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+
+      mediaRecorder.ondataavailable = event => {
+        if (event.data.size > 0) {
+          recordedChunks.push(event.data);
+        }
+      };
+
+      mediaRecorder.start();
+      document.getElementById('status').innerText = 'Recording...';
+    }
+
+    function stopRecording() {
+      mediaRecorder.stop();
+      mediaRecorder.onstop = async () => {
+        const videoBlob = new Blob(recordedChunks, { type: 'video/webm' });
+        const formData = new FormData();
+        formData.append('video', videoBlob, 'swing.webm');
+
+        document.getElementById('status').innerText = 'Uploading...';
+
+        try {
+          const response = await fetch('http://localhost:5000/analyze', {
+            method: 'POST',
+            body: formData
+          });
+
+          const result = await response.json();
+          document.getElementById('status').innerText = 'Analysis Complete!';
+          console.log('Swing Feedback:', result);
+          alert('Swing Grade: ' + result.swing_grade);
+        } catch (error) {
+          console.error('Upload failed:', error);
+          document.getElementById('status').innerText = 'Error uploading video.';
+        }
+      };
+    }
+  </script>
+</body>
+</html>
