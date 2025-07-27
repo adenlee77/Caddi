@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Swing Feedback</title>
+</head>
+<body>
+
+  <h1>Golf Swing Feedback</h1>
+
+  <h2>Grade</h2>
+  <p id="swing_grade"></p>
+
+  <h2>Overall Analysis</h2>
+  <p id="overall_feedback"></p>
+
+  <h2>Recommended Drills</h2>
+  <ul id="drills"></ul>
+
+  <a href="/">← Back to Home</a>
+
+  <script>
+    const feedbackStr = localStorage.getItem('swing_feedback');
+
+    if (feedbackStr) {
+      const feedback = JSON.parse(feedbackStr);
+
+      if ('swing_grade' in feedback) {
+        document.getElementById('swing_grade').innerText = feedback.swing_grade + "/100";
+      }
+
+      if ('overall_feedback' in feedback) {
+        document.getElementById('overall_feedback').innerText = feedback.overall_feedback;
+      } else {
+        document.getElementById('overall_feedback').innerText = "No summary provided.";
+      }
+
+      const drillList = document.getElementById('drills');
+      if ('drills' in feedback && Array.isArray(feedback.drills) && feedback.drills.length > 0) {
+        feedback.drills.forEach(drill => {
+          const li = document.createElement('li');
+          li.innerText = drill;
+          drillList.appendChild(li);
+        });
+      } else {
+        const li = document.createElement('li');
+        li.innerText = "No drills suggested.";
+        drillList.appendChild(li);
+      }
+      localStorage.removeItem('swing_feedback');
+    } else {
+      document.body.innerHTML = "<p>No feedback found. Please record or upload a swing first.</p>";
+      localStorage.removeItem('swing_feedback');
+    }
+  </script>
+
+</body>
+</html>

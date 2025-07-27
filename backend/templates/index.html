@@ -72,7 +72,7 @@
 
           const result = await response.json();
 
-          localStorage.setItem('feedback', JSON.stringify(result));
+          localStorage.setItem('swing_feedback', JSON.stringify(result));
           window.location.href = '/feedback';
         } catch (error) {
           console.error('Upload failed:', error);
@@ -104,7 +104,7 @@
     });
 
     const result = await response.json();
-    localStorage.setItem('feedback', JSON.stringify(result));
+    localStorage.setItem('swing_feedback', JSON.stringify(result));
     window.location.href = '/feedback';
   } catch (err) {
     console.error('Upload failed:', err);

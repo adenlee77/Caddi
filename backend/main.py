@@ -98,12 +98,9 @@ def analyze():
                 {swing_data}
 
                 Please analyze the swing and respond breifly in **JSON format** with the following fields:
-                - "setup_feedback": feedback about the body position during setup
-                - "backswing_feedback": feedback about the backswing
-                - "downswing_feedback": feedback about the downswing
-                - "followthrough_feedback": feedback about the followthrough
-                - "swing_grade": a grade from 0-100
-                - "drills": a list of 1 or 2 drills that would help fix major issues
+                - "overall_feedback": A concise summary highlighting key strengths or weaknesses observed in the swing. Focus on the most notable aspects, whether positive or negative.
+                - "swing_grade": A numerical score (0–100) reflecting the overall quality of the swing.
+                - "drills": A list of 1–2 targeted drills that address the most significant areas for improvement.
 
                 Respond with only a valid JSON object. Do not wrap it in code block formatting, no explanation or extra commentary.
                 """
@@ -113,7 +110,7 @@ def analyze():
 
 @app.route('/feedback')
 def results():
-    return 'html file for feedback later'
+    return render_template('feedback.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
