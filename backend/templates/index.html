@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Caddi</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin-top: 30px; }
+    video { border: 2px solid #444; width: 640px; height: 480px; margin-bottom: 15px; }
+    button { padding: 10px 20px; margin: 10px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>Golf Swing Video Recorder</h1>
+  <video id="preview" autoplay muted playsinline></video><br>
+  <button id="recordButton" onclick="toggleRecording()">Start Recording</button>
+  <input type="file" id="fileInput" accept="video/*" style="display:none" onchange="handleFileUpload()" />
+  <button onclick="document.getElementById('fileInput').click()">Upload Video File</button>
+
+  <p id="status"></p>
+
+  <script>
+  let mediaRecorder;
+  let recordedChunks = [];
+  let isRecording = false;
+  let stream;
+
+  async function toggleRecording() {
+    const button = document.getElementById('recordButton');
+    const statusText = document.getElementById('status');
+
+    if (!isRecording) {
+      stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      document.getElementById('preview').srcObject = stream;
+
+      recordedChunks = [];
+      mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+
+      mediaRecorder.ondataavailable = event => {
+        if (event.data.size > 0) {
+          recordedChunks.push(event.data);
+        }
+      };
+
+      mediaRecorder.start();
+      statusText.innerText = 'Recording...';
+      button.innerText = 'Stop & Upload';
+      isRecording = true;
+    } else {
+      mediaRecorder.stop();
+      statusText.innerText = 'Stopping recording...';
+      button.disabled = true;
+
+      mediaRecorder.onstop = async () => {
+        const videoBlob = new Blob(recordedChunks, { type: 'video/webm' });
+
+        if (videoBlob.size === 0) {
+          statusText.innerText = 'Recording too short or failed.';
+          button.disabled = false;
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('video', videoBlob, 'swing.webm');
+
+        statusText.innerText = 'Uploading...';
+
+        try {
+          const response = await fetch('http://127.0.0.1:5000/analyze', {
+            method: 'POST',
+            body: formData
+          });
+
+          const result = await response.json();
+
+          localStorage.setItem('feedback', JSON.stringify(result));
+          window.location.href = '/feedback';
+        } catch (error) {
+          console.error('Upload failed:', error);
+          statusText.innerText = 'Error uploading video.';
+        }
+      };
+
+      stream.getTracks().forEach(track => track.stop());
+      isRecording = false;
+    }
+  }
+
+  async function handleFileUpload() {
+  const fileInput = document.getElementById('fileInput');
+  const statusText = document.getElementById('status');
+
+  if (fileInput.files.length === 0) return;
+
+  const file = fileInput.files[0];
+  const formData = new FormData();
+  formData.append('video', file, file.name);
+
+  statusText.innerText = 'Uploading...';
+
+  try {
+    const response = await fetch('http://127.0.0.1:5000/analyze', {
+      method: 'POST',
+      body: formData
+    });
+
+    const result = await response.json();
+    localStorage.setItem('feedback', JSON.stringify(result));
+    window.location.href = '/feedback';
+  } catch (err) {
+    console.error('Upload failed:', err);
+    statusText.innerText = 'Error uploading video.';
+  }
+}
+</script>
+</body>
+</html>

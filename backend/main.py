@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session, render_template
 from flask_cors import CORS
 import tempfile
 import cv2
@@ -14,7 +14,7 @@ mp_pose = mp.solutions.pose
 
 @app.route('/')
 def home():
-    return 'Hello world'
+    return render_template('index.html')
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
@@ -110,6 +110,10 @@ def analyze():
 
     feedback = swing_feedback(prompt)
     return jsonify(feedback)
+
+@app.route('/feedback')
+def results():
+    return 'html file for feedback later'
 
 if __name__ == '__main__':
     app.run(debug=True)
