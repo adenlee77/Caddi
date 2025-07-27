@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: 
+    linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)),
+    url('golf_course_photo.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: #333;
+  text-align: center;
+  padding: 40px;
+  margin: 0;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+}
+
+video {
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  width: 640px;
+  height: 480px;
+  margin-bottom: 25px;
+}
+
+button {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  margin: 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #1565c0;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+#status {
+  margin-top: 20px;
+  font-size: 1rem;
+  color: #444;
+}

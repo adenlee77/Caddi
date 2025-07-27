@@ -3,26 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <title>Caddi</title>
-  <style>
-    body { font-family: sans-serif; text-align: center; margin-top: 30px; }
-    video { border: 2px solid #444; width: 640px; height: 480px; margin-bottom: 15px; }
-    button { padding: 10px 20px; margin: 10px; font-size: 16px; }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='../static/index.css') }}">
 </head>
 <body>
-  <h1>Golf Swing Video Recorder</h1>
+  <h1>Caddi</h1>
+
   <video id="preview" autoplay muted playsinline></video><br>
+  <h2>Upload a Front-Facing Video of a Golf Swing For Instant Personalized Feedback</h2>
   <button id="recordButton" onclick="toggleRecording()">Start Recording</button>
   <input type="file" id="fileInput" accept="video/*" style="display:none" onchange="handleFileUpload()" />
   <button onclick="document.getElementById('fileInput').click()">Upload Video File</button>
-
   <p id="status"></p>
+</body>
 
   <script>
   let mediaRecorder;
   let recordedChunks = [];
   let isRecording = false;
   let stream;
+
+  window.onload = async function () {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const videoElement = document.getElementById('preview');
+      videoElement.srcObject = stream;
+    } catch (err) {
+      console.error("Error accessing webcam:", err);
+      document.getElementById('status').innerText = "Could not access camera.";
+    }
+  };
 
   async function toggleRecording() {
     const button = document.getElementById('recordButton');
@@ -61,6 +70,7 @@
 
         const formData = new FormData();
         formData.append('video', videoBlob, 'swing.webm');
+        //formData.append('club', document.getElementById('club').value);
 
         statusText.innerText = 'Uploading...';
 
@@ -94,6 +104,7 @@
   const file = fileInput.files[0];
   const formData = new FormData();
   formData.append('video', file, file.name);
+  //formData.append('club', document.getElementById('club').value);
 
   statusText.innerText = 'Uploading...';
 
