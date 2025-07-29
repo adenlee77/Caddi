@@ -98,9 +98,9 @@ def analyze():
                 {swing_data}
 
                 Please analyze the swing and respond breifly in **JSON format** with the following fields:
-                - "overall_feedback": A concise summary highlighting key strengths or weaknesses observed in the swing. Focus on the most notable aspects, whether positive or negative.
-                - "swing_grade": A numerical score (0–100) reflecting the overall quality of the swing.
-                - "drills": A list of 1–2 targeted drills that address the most significant areas for improvement.
+                - "overall_feedback": A concise summary highlighting key strengths or weaknesses observed in the swing. Focus on the most notable aspects, whether positive or negative. Please mention club specific issues or strengths. Make the response roughly 2-3 sentences.
+                - "swing_grade": A numerical score (0–100) reflecting the overall quality of the swing using a standardized method. Make sure to use all numbers, not just multiples of 10 or 5.
+                - "drills": A list of 1–2 targeted drills that address the most significant areas for improvement. Each drill must be formatted as an object with two fields: "title" (a short, descriptive name) and "description" (a brief explanation of how to set up and perform the drill). Ensure the drills focus on overall swing improvement, not just isolated mechanics like wrist movement or hip rotation. Avoid repetition and make sure each drill is meaningfully distinct from the other
 
                 Respond with only a valid JSON object. Do not wrap it in code block formatting, no explanation or extra commentary.
                 """

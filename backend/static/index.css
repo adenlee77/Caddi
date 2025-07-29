@@ -19,12 +19,42 @@ h1 {
   margin-bottom: 30px;
 }
 
+.video-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
 video {
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   width: 640px;
   height: 480px;
-  margin-bottom: 25px;
+}
+
+.club-selector {
+  position: absolute;
+  right: 60px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.7);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.club-selector label {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.club-selector select {
+  padding: 8px 12px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fff;
 }
 
 button {
@@ -45,6 +75,11 @@ button:hover {
 
 input[type="file"] {
   display: none;
+}
+
+select {
+  max-height: 10em;
+  overflow-y: auto;
 }
 
 #status {

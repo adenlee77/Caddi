@@ -3,30 +3,75 @@
 <head>
   <meta charset="UTF-8">
   <title>Swing Feedback</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='feedback.css') }}">
 </head>
 <body>
 
-  <h1>Golf Swing Feedback</h1>
+  <h1>Swing Feedback</h1>
 
   <h2>Grade</h2>
-  <p id="swing_grade"></p>
+  <div class="grade-container">
+    <canvas id="gradeCanvas" width="300" height="150"></canvas>
+    <div class="grade-label" id="grade-text">Score: --</div>
+  </div>
+
 
   <h2>Overall Analysis</h2>
   <p id="overall_feedback"></p>
 
   <h2>Recommended Drills</h2>
   <ul id="drills"></ul>
+  
+  <br></br>
 
   <a href="/">← Back to Home</a>
 
   <script>
     const feedbackStr = localStorage.getItem('swing_feedback');
 
+    function updateGrade(score) {
+      const canvas = document.getElementById("gradeCanvas");
+      const ctx = canvas.getContext("2d");
+      const radius = 100;
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height;
+
+      const text = document.getElementById("grade-text");
+      text.textContent = `Score: ${score}/100`;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, Math.PI, 0, false);
+      ctx.lineWidth = 20;
+      ctx.strokeStyle = "#ddd";
+      ctx.stroke();
+      ctx.closePath();
+
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+      gradient.addColorStop(0, "red");
+      gradient.addColorStop(0.25, "#ff4500"); 
+      gradient.addColorStop(0.45, "#ff9900");
+      gradient.addColorStop(0.5, "yellow");
+      gradient.addColorStop(0.55, "#ccff33");
+      gradient.addColorStop(0.75, "#00ff00");
+      gradient.addColorStop(1, "#00ff00"); 
+
+      const angle = Math.PI * (score / 100);
+
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, Math.PI, Math.PI + angle, false);
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 20;
+      ctx.stroke();
+      ctx.closePath();
+    }
+
     if (feedbackStr) {
       const feedback = JSON.parse(feedbackStr);
 
       if ('swing_grade' in feedback) {
-        document.getElementById('swing_grade').innerText = feedback.swing_grade + "/100";
+        updateGrade(feedback.swing_grade);
       }
 
       if ('overall_feedback' in feedback) {
@@ -36,10 +81,17 @@
       }
 
       const drillList = document.getElementById('drills');
+
       if ('drills' in feedback && Array.isArray(feedback.drills) && feedback.drills.length > 0) {
         feedback.drills.forEach(drill => {
           const li = document.createElement('li');
-          li.innerText = drill;
+
+          if (typeof drill === 'object' && drill !== null && 'title' in drill && 'description' in drill) {
+            li.innerHTML = `<strong>${drill.title}</strong>: ${drill.description}`;
+          } else {
+            li.innerText = drill;
+          }
+
           drillList.appendChild(li);
         });
       } else {
@@ -47,10 +99,11 @@
         li.innerText = "No drills suggested.";
         drillList.appendChild(li);
       }
+
+
       localStorage.removeItem('swing_feedback');
     } else {
       document.body.innerHTML = "<p>No feedback found. Please record or upload a swing first.</p>";
-      localStorage.removeItem('swing_feedback');
     }
   </script>
 
