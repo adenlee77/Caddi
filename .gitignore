@@ -2,3 +2,5 @@
 golf-env/
 __pycache__/
 *.py[cod]
+dockerfile
+*.tar
