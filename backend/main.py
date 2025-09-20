@@ -1,3 +1,7 @@
+# To run: docker run -p 5001:5000 --env-file backend/.env caddi
+# Go to: http://127.0.0.1:5001/
+# If changes made run: docker build -t caddi .
+
 from flask import Flask, request, jsonify, session, render_template
 from flask_cors import CORS
 import tempfile
